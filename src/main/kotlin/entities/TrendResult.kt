@@ -14,11 +14,11 @@ data class TrendResult(
 
 
 fun List<TrendResult>.toCSV(): String = buildString {
-    appendLine("asset;daily_pct;monthly_pct;cagr_pct;period_pct;max_drawdown_pct;r_squared")
+    appendLine("Asset;Daily %;Monthly %;CAGR %;Period %;Max drawdown %;R^2")
     this@toCSV.sortedBy { it.maxDrawdownPercent }.forEach {
         appendLine(
             "%s;%.4f;%.4f;%.4f;%.4f;%.4f;%.4f".format(
-                Locale.ROOT, it.asset, it.dailyRatePercent, it.monthlyRatePercent,
+                Locale.getDefault(), it.asset, it.dailyRatePercent, it.monthlyRatePercent,
                 it.annualRatePercent, it.totalPeriodReturnPercent, it.maxDrawdownPercent, it.rSquared
             )
         )

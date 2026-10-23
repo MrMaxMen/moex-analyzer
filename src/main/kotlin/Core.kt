@@ -39,9 +39,9 @@ class Core (
         for ((ticker, result) in fetchAssetsHistoryResults) {
             val records = result.getOrNull()
             when {
-                records == null -> skipped[ticker] = "ошибка запроса: ${result.exceptionOrNull()?.message}"
-                records.isEmpty() -> skipped[ticker] = "нет данных"
-                !hasFullPeriod(records, since.since) -> skipped[ticker] = "история короче периода"
+                records == null -> skipped[ticker] = "request failed: ${result.exceptionOrNull()?.message}"
+                records.isEmpty() -> skipped[ticker] = "no data"
+                !hasFullPeriod(records, since.since) -> skipped[ticker] = "history shorter than period"
                 else -> history[ticker] = records
             }
         }
@@ -51,8 +51,16 @@ class Core (
             .map { (ticker, records) -> calculateTrend(ticker, records) }
 
         val res = AnalysisReport(results, skipped)
-        if (toCSV) saveCsv("result", res.results.toCSV())
-        else Display.calculationResults(res.results)
+        if (toCSV) {
+            saveCsv("result", res.results.toCSV())
+            if (res.skipped.isNotEmpty()) {
+                saveCsv("skipped", res.skipped.toCSV(), open = false)
+                println("Skipped tickers: ${res.skipped.size}")
+            }
+        } else {
+            Display.calculationResults(res.results)
+            if (res.skipped.isNotEmpty()) Display.skipped(res.skipped)
+        }
 
     }
 }

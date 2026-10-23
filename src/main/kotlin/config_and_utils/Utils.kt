@@ -39,18 +39,25 @@ fun tryOpenFile(file: File) {
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
             Desktop.getDesktop().open(file)
         } else {
-            System.err.println("Автоматическое открытие не поддерживается, откройте файл вручную")
+            System.err.println("Can't open the file automatically, open it manually")
         }
     } catch (e: Exception) {
-        System.err.println("Не удалось открыть файл: ${e.message}")
+        System.err.println("Can't open the file: ${e.message}")
     }
 }
 
-fun saveCsv(prefix: String, content: String): File {
+fun saveCsv(prefix: String, content: String,open: Boolean = true): File {
     val stamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))
     val target = File("${prefix}_$stamp.csv")
     target.writeText("\uFEFF" + content, Charsets.UTF_8)
     println("Сохранено: ${target.absolutePath}")
-    tryOpenFile(target)
+    if (open) tryOpenFile(target)
     return target
+}
+
+fun Map<String, String>.toCSV(): String = buildString {
+    appendLine("Ticker;Reason")
+    this@toCSV.toSortedMap().forEach { (ticker, reason) ->
+        appendLine("${ticker.csvEscape()};${reason.csvEscape()}")
+    }
 }

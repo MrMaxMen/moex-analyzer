@@ -7,23 +7,23 @@ object Display  {
 
     fun calculationResults(trends: List<TrendResult>) {
 
-        println("\n" + "=".repeat(104))
+        println("\n" + "=".repeat(90))
         println(
-            "%-12s | %-10s | %-10s | %-14s | %-12s | %-15s | %-6s".format(
+            "%-12s | %-10s | %-10s | %-9s | %-12s | %-12s | %-6s".format(
                 "Asset",
-                "Дневной %",
-                "Месячный %",
-                "Годовых (CAGR)",
-                "За период %",
-                "Максимальная просадка",
+                "Daily %",
+                "Monthly %",
+                "CAGR %",
+                "Period %",
+                "Max drawdown",
                 "R^2"
             )
         )
-        println("=".repeat(104))
+        println("=".repeat(90))
 
         trends.sortedBy { it.maxDrawdownPercent }.forEach {
             println(
-                "%-12s | %9.4f%% | %9.4f%% | %13.2f%% | %11.2f%% | %20.2f%% | %6.4f".format(
+                "%-12s | %9.4f%% | %9.4f%% | %8.2f%% | %11.2f%% | %11.2f%% | %6.4f".format(
                     it.asset,
                     it.dailyRatePercent,
                     it.monthlyRatePercent,
@@ -36,9 +36,25 @@ object Display  {
         }
     }
 
+    fun skipped(skipped : Map<String, String>){
+        print("\n" + "skipped results :")
+        println("\n" + "=".repeat(50))
+        print("%-12s | %-25s ".format("ticker", "skip reason"))
+        println("\n" + "=".repeat(50))
+        skipped.forEach {
+            println(
+                "%-12s | %-25s".format(
+                    it.key,
+                    it.value
+                )
+            )
+        }
+
+    }
+
     fun fundsFullNames(funds: List<Fund>) {
         println("\n" + "=".repeat(50))
-        println("%-12s | %-25s ".format("ticker", "full name"))
+        print("%-12s | %-25s ".format("ticker", "full name"))
         println("\n" + "=".repeat(50))
         funds.forEach {
             println(
