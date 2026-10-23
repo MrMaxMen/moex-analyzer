@@ -1,9 +1,14 @@
 name: Release
+
 on:
   push:
-    tags: ['v*']
+    branches: [master]
+    paths: [build.gradle.kts]
+  workflow_dispatch:
+
 permissions:
   contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -14,9 +19,16 @@ jobs:
           distribution: temurin
           java-version: 25
       - uses: gradle/actions/setup-gradle@v4
-      - run: chmod +x gradlew
-      - run: ./gradlew distZip
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: build/distributions/*.zip
-          generate_release_notes: true
+      - name: Release if the version is new
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(sed -nE 's/^version *= *"([^"]+)".*/\1/p' build.gradle.kts | head -n1)
+          [ -z "$VERSION" ] && { echo "::error::No version in build.gradle.kts"; exit 1; }
+          [[ "$VERSION" == *SNAPSHOT* ]] && { echo "$VERSION is a snapshot, skipping"; exit 0; }
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/v$VERSION" > /dev/null 2>&1 \
+            && { echo "v$VERSION already released, skipping"; exit 0; }
+          chmod +x gradlew
+          ./gradlew build distZip
+          gh release create "v$VERSION" build/distributions/*.zip \
+            --target "$GITHUB_SHA" --title "v$VERSION" --generate-notes
