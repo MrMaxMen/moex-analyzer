@@ -25,7 +25,7 @@ kotlin {
 application {
     mainClass.set("com.example.MainKt")
     applicationName = "maa"
-    applicationDefaultJvmArgs = listOf("-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-Dstderr.encoding=UTF-8")
+    applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED")
 }
 
 tasks.withType<JavaExec> {
