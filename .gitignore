@@ -19,3 +19,7 @@ out/
 # Windows
 Thumbs.db
 Desktop.ini
+
+#Python
+.venv/
+__pycache__/
