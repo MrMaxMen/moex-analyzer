@@ -1,6 +1,8 @@
 package com.example
 
 import com.example.entities.HistoryRecord
+import com.example.utils.parseFunds
+import com.example.utils.parseTickers
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

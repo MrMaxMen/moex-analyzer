@@ -1,6 +1,5 @@
-package com.example.config_and_utils
+package com.example.utils
 
-import com.example.Fund
 import com.example.entities.TrendResult
 
 object Display  {

@@ -1,7 +1,8 @@
 package com.example
 
-import com.example.config_and_utils.historyUrlFor
+import com.example.utils.historyUrlFor
 import com.example.entities.HistoryRecord
+import com.example.utils.parseHistory
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*

@@ -1,4 +1,4 @@
-package com.example.config_and_utils
+package com.example.utils
 
 object ProgressBar {
     @Synchronized
