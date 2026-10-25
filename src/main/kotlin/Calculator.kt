@@ -68,7 +68,9 @@ import kotlin.math.pow
             annualRatePercent = annualRate,
             totalPeriodReturnPercent = totalPeriodReturn,
             maxDrawdownPercent = worst,
-            rSquared = rSquared
+            rSquared = rSquared,
+            slope = b,
+            intercept = a
         )
     }
 

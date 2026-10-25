@@ -1,8 +1,11 @@
 package com.example.utils
 
+import com.example.entities.HistoryRecord
+import com.example.entities.TrendResult
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 
 fun saveCsv(prefix: String, content: String,open: Boolean = true): File {
@@ -22,9 +25,9 @@ fun Map<String, String>.toCSV(): String = buildString {
 }
 
 
-fun List<Fund>.toCSV(): String = buildString {
+fun List<Fund>.listFundsToCSV(): String = buildString {
     appendLine("ticker;full_name")
-    this@toCSV.sortedBy { it.ticker }.forEach {
+    this@listFundsToCSV.sortedBy { it.ticker }.forEach {
         appendLine("${it.ticker.csvEscape()};${it.fullName.csvEscape()}")
     }
 }
@@ -34,3 +37,33 @@ private fun String.csvEscape(): String =
         "\"" + replace("\"", "\"\"") + "\""
     } else this
 
+
+fun saveAssetHistoryToCSV(
+    ticker: String,
+    records: List<HistoryRecord>,
+    dir: File = File("history")
+): File {
+    dir.mkdirs()
+    val target = File(dir, "$ticker.csv")
+    val content = buildString {
+        appendLine("ticker;date;close")
+        records.sortedBy { it.date }.forEach {
+            appendLine("${ticker.csvEscape()};${it.date};${it.close}")
+        }
+    }
+    target.writeText(content, Charsets.UTF_8)
+    return target
+}
+
+fun List<TrendResult>.listTrendResultToCSV(): String = buildString {
+    appendLine("Asset;Daily %;Monthly %;CAGR %;Period %;Max drawdown %;R^2;Slope;Intercept")
+    this@listTrendResultToCSV.sortedBy { it.maxDrawdownPercent }.forEach {
+        appendLine(
+            "%s;%.4f;%.4f;%.4f;%.4f;%.4f;%.4f;%.10f;%.10f".format(
+                Locale.getDefault(), it.asset, it.dailyRatePercent, it.monthlyRatePercent,
+                it.annualRatePercent, it.totalPeriodReturnPercent, it.maxDrawdownPercent,
+                it.rSquared, it.slope, it.intercept
+            )
+        )
+    }
+}

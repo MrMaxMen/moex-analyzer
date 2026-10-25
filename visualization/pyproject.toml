@@ -3,6 +3,7 @@ name = "visualization"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
+    "numpy>=2.5.4",
     "pandas>=3.1.0",
     "plotly>=7.1.0",
 ]

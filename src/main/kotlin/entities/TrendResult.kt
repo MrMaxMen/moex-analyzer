@@ -9,18 +9,10 @@ data class TrendResult(
     val annualRatePercent: Double,        // Годовая доходность (% годовых, CAGR)
     val totalPeriodReturnPercent: Double, // Рост тренда за весь период (%)
     val maxDrawdownPercent : Double,
-    val rSquared: Double                  // Коэффициент детерминации R^2
+    val rSquared: Double,                  // Коэффициент детерминации R^2
+    val slope: Double = 0.0,      // b: рост ln(цены) за календарный день
+    val intercept: Double = 0.0   // a: ln(цены) в t = 0 (первая дата ряда)
+
 )
 
 
-fun List<TrendResult>.toCSV(): String = buildString {
-    appendLine("Asset;Daily %;Monthly %;CAGR %;Period %;Max drawdown %;R^2")
-    this@toCSV.sortedBy { it.maxDrawdownPercent }.forEach {
-        appendLine(
-            "%s;%.4f;%.4f;%.4f;%.4f;%.4f;%.4f".format(
-                Locale.getDefault(), it.asset, it.dailyRatePercent, it.monthlyRatePercent,
-                it.annualRatePercent, it.totalPeriodReturnPercent, it.maxDrawdownPercent, it.rSquared
-            )
-        )
-    }
-}

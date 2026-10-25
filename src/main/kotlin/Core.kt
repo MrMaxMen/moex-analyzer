@@ -1,15 +1,12 @@
 package com.example
 
-import com.example.config_and_utils.*
+import com.example.config_and_utils.Period
+import com.example.config_and_utils.configureHttpClient
 import com.example.entities.HistoryRecord
 import com.example.entities.TrendResult
-import com.example.entities.toCSV
-import com.example.utils.Display
-import com.example.utils.ProgressBar
-import com.example.utils.hasFullPeriod
-import com.example.utils.saveCsv
-import com.example.utils.toCSV
+import com.example.utils.*
 import io.ktor.client.*
+import java.io.File
 
 
 data class AnalysisReport(
@@ -24,16 +21,16 @@ class Core (
 
     suspend fun getAssetsFullNames(toCSV: Boolean) {
         val assets = dataService.getFundsFullNames()
-        if (toCSV) saveCsv("asset_names", assets.toCSV())
+        if (toCSV) saveCsv("asset_names", assets.listFundsToCSV())
         else Display.fundsFullNames(assets)
     }
 
-    suspend fun getAssetsAnalyticsResults(since: Period, toCSV: Boolean, tickers: List<String>?) {
+    suspend fun getAssetsAnalyticsResults(since: Period, toCSV: Boolean,visualize : Boolean, tickers: List<String>?) {
         val skipped = mutableMapOf<String, String>()
 
         val history = mutableMapOf<String, List<HistoryRecord>>()
 
-        val fetchAssetsHistoryResults = if (tickers == null) {
+        val assetsHistoryFetchResults = if (tickers == null) {
             dataService.fetchAssetsNames()
             dataService.fetchAssetsHistory(onProgress = ProgressBar::draw, since = since.since)
         } else {
@@ -41,7 +38,7 @@ class Core (
         }
 
 
-        for ((ticker, result) in fetchAssetsHistoryResults) {
+        for ((ticker, result) in assetsHistoryFetchResults) {
             val records = result.getOrNull()
             when {
                 records == null -> skipped[ticker] = "request failed: ${result.exceptionOrNull()?.message}"
@@ -57,16 +54,29 @@ class Core (
 
         val res = AnalysisReport(results, skipped)
         if (toCSV) {
-            saveCsv("result", res.results.toCSV())
+            saveCsv("result", res.results.listTrendResultToCSV())
             if (res.skipped.isNotEmpty()) {
                 saveCsv("skipped", res.skipped.toCSV(), open = false)
                 println("Skipped tickers: ${res.skipped.size}")
             }
-        } else {
+        } else if(visualize){
+            history.forEach { (ticker, records) -> saveAssetHistoryToCSV(ticker, records) }
+            saveCsv("result", res.results.listTrendResultToCSV(), open = false)
+            if (res.skipped.isNotEmpty()) {
+                saveCsv("skipped", res.skipped.toCSV(), open = false)
+                println("Skipped tickers: ${res.skipped.size}")
+            }
+            val dataDir = File("").absoluteFile
+            if (runVisualization(dataDir)) {
+                tryOpenFile(File(dataDir, "charts/index.html"))
+            }
+
+        }else {
             Display.calculationResults(res.results)
             if (res.skipped.isNotEmpty()) Display.skipped(res.skipped)
         }
 
     }
+
 }
 

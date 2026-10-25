@@ -35,3 +35,13 @@ tasks.withType<JavaExec> {
 }
 
 
+distributions {
+    main {
+        contents {
+            from("visualization") {
+                include("main.py", "requirements.txt")
+                into("visualization")
+            }
+        }
+    }
+}
