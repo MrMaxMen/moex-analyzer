@@ -16,16 +16,19 @@ class CLI : CliktCommand(){
     private val toCSV by option("--csv" ,"-c",help = "store results in csv file").flag()
     private val names by option("--names" , "-n",help = "get all funds full names").flag()
     private val since by option("--since", "-s", help = "Analysis period: MONTH, QUARTER, HALF_YEAR, YEAR (default: YEAR)").enum<Period>()
+    private val visualize by option("--visualize","-v",help = "create visual representation of calculation results").flag()
 
     override fun run() {
         if (!all && tickers == null && !names)
             throw UsageError("choose mode: --all, --tickers или --names")
         if (names && since != null)
             throw UsageError("--since doesn't work with  --names")
+        if(names && visualize)
+            throw UsageError("--visualize doesn't work with  --names")
         if (all && tickers != null)
-            throw UsageError("Нельзя использовать --all и --tickers вместе")
+            throw UsageError("you can't use --all and --tickers together")
         if ( names && (all || tickers != null) )
-            throw UsageError("Нельзя использовать --all или --tickers вместе с --names")
+            throw UsageError("you can't use --all and --tickers with --names")
 
         val period = since ?: Period.YEAR
 
@@ -35,7 +38,7 @@ class CLI : CliktCommand(){
 
                 if (names) core.getAssetsFullNames(toCSV)
 
-                if (all || tickers != null) core.getAssetsAnalyticsResults(period, toCSV, tickers)
+                if (all || tickers != null) core.getAssetsAnalyticsResults(period, toCSV,visualize, tickers)
 
             }
         }finally {
