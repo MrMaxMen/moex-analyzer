@@ -16,7 +16,7 @@ class CLI : CliktCommand(){
     private val toCSV by option("--csv" ,"-c",help = "store results in csv file").flag()
     private val names by option("--names" , "-n",help = "get all funds full names").flag()
     private val since by option("--since", "-s", help = "Analysis period: MONTH, QUARTER, HALF_YEAR, YEAR (default: YEAR)").enum<Period>()
-    private val visualize by option("--visualize","-v",help = "create visual representation of calculation results").flag()
+    private val visualize by option("--visualize","-v",help = "save results as CSV and creates visual representation of calculation results (in html files)").flag()
 
     override fun run() {
         if (!all && tickers == null && !names)
@@ -29,6 +29,8 @@ class CLI : CliktCommand(){
             throw UsageError("you can't use --all and --tickers together")
         if ( names && (all || tickers != null) )
             throw UsageError("you can't use --all and --tickers with --names")
+        if (toCSV && visualize)
+            throw UsageError("--csv and --visualize can't be used together: --visualize already saves the result CSV")
 
         val period = since ?: Period.YEAR
 

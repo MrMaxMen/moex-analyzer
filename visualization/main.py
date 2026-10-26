@@ -46,6 +46,8 @@ def bootstrap() -> None:
     code = subprocess.run([str(py), str(Path(__file__).resolve()), *sys.argv[1:]]).returncode
     raise SystemExit(code)
 
+if sys.version_info < (3, 11):
+    raise SystemExit(f"Python 3.11+ is required (found {sys.version.split()[0]}).")
 
 bootstrap()
 

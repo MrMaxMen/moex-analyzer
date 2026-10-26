@@ -20,5 +20,6 @@ fun runVisualization(dataDir: File): Boolean {
 }
 
 private fun canRun(cmd: String) = runCatching {
-    ProcessBuilder(cmd, "--version").redirectErrorStream(true).start().waitFor() == 0
+    ProcessBuilder(cmd, "-c", "import sys; sys.exit(0 if sys.version_info >= (3, 11) else 1)")
+        .redirectErrorStream(true).start().waitFor() == 0
 }.getOrDefault(false)
