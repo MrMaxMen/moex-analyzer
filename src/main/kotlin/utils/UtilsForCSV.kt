@@ -12,7 +12,7 @@ fun saveCsv(prefix: String, content: String,open: Boolean = true): File {
     val stamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))
     val target = File("${prefix}_$stamp.csv")
     target.writeText("\uFEFF" + content, Charsets.UTF_8)
-    println("Сохранено: ${target.absolutePath}")
+    println("saved: ${target.absolutePath}")
     if (open) tryOpenFile(target)
     return target
 }

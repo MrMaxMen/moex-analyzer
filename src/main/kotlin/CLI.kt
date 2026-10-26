@@ -20,7 +20,7 @@ class CLI : CliktCommand(){
 
     override fun run() {
         if (!all && tickers == null && !names)
-            throw UsageError("choose mode: --all, --tickers или --names")
+            throw UsageError("choose mode: --all, --tickers or --names")
         if (names && since != null)
             throw UsageError("--since doesn't work with  --names")
         if(names && visualize)
